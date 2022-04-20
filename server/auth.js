@@ -54,15 +54,19 @@ async function handleRegistration(player, email, username, password) {
         alt.emitClient(player, 'auth:Error', MSGS.EXISTS);
         return;
     }
+	
+	const allowed = false;
 
     const document = {
         email,
         username,
+		allowed,
         password: encryptPassword(password)
     };
 
     const dbData = await db.insertData(document, 'accounts', true);
-    alt.emit('auth:Done', player, dbData._id.toString(), dbData.username, dbData.email);
+	alt.emitClient(player, 'auth:Error', MSGS.ACIVATION);
+    alt.emit('auth:Registered', player, dbData._id.toString(), dbData.username, dbData.email);
 }
 
 /**
@@ -80,6 +84,11 @@ async function handleLogin(player, username, password) {
 
     if (!verifyPassword(password, accounts[0].password)) {
         alt.emitClient(player, 'auth:Error', MSGS.INCORRECT);
+        return;
+    }
+	
+	if (!accounts[0].allowed) {
+        alt.emitClient(player, 'auth:Error', MSGS.NOTALLOWED);
         return;
     }
 
