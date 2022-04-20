@@ -111,7 +111,7 @@ async function writeModel(username, model) {
     
     const document = {
         username: "test",
-        model: "test")
+        model: "test"
     };
     const dbData = await db.insertData(document, 'models', true);
     alt.emit('auth:ModelSaved', dbData.username, dbData.model);
