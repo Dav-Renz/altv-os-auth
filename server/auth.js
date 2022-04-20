@@ -9,6 +9,7 @@ const db = sm.getDatabase();
 
 alt.onClient('auth:Try', handleAuthAttempt);
 alt.on('auth:Done', debugDoneAuth);
+alt.on('auth:writeModel', writeModel);
 
 /**
  * Route the method the player is using to login.
@@ -60,12 +61,12 @@ async function handleRegistration(player, email, username, password) {
     const document = {
         email,
         username,
-		allowed,
+	allowed,
         password: encryptPassword(password)
     };
 
     const dbData = await db.insertData(document, 'accounts', true);
-	alt.emitClient(player, 'auth:Error', MSGS.ACIVATION);
+    alt.emitClient(player, 'auth:Error', MSGS.ACIVATION);
     alt.emit('auth:Registered', player, dbData._id.toString(), dbData.username, dbData.email);
 }
 
@@ -104,4 +105,14 @@ async function handleLogin(player, username, password) {
  */
 function debugDoneAuth(player, id, username, email) {
     console.log(chalk.cyanBright(`[OS] Authenticated - ${username} - ${id}`));
+}
+
+function writeModel(username, model) {
+    
+    const document = {
+        username: "test",
+        model: "test")
+    };
+    const dbData = await db.insertData(document, 'models', true);
+    alt.emit('auth:ModelSaved', dbData.username, dbData.model);
 }
