@@ -107,7 +107,7 @@ function debugDoneAuth(player, id, username, email) {
     console.log(chalk.cyanBright(`[OS] Authenticated - ${username} - ${id}`));
 }
 
-function writeModel(username, model) {
+async function writeModel(username, model) {
     
     const document = {
         username: "test",
