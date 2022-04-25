@@ -140,7 +140,7 @@ async function getModel(userName, emit) {
     const models = await db.fetchAllByField('username', userName, 'models');
 
     if (emit) {
-        if (models.length > 1) {
+        if (models.length >= 1) {
             alt.emit('auth:ModelGetted', models[0].model)
         }
         else {
@@ -148,7 +148,7 @@ async function getModel(userName, emit) {
         }
     }
     else {
-        if (models.length > 1) {
+        if (models.length >= 1) {
             return models[0].model;
         }
         else {
