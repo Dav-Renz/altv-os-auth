@@ -79,7 +79,7 @@ async function handleRegistration(player, email, username, password) {
  */
 async function handleLogin(player, username, password) {
     const accounts = await db.fetchAllByField('username', username, 'accounts');
-    const models = await db.fetchAllByField('username', userName, 'models');
+    //const models = await db.fetchAllByField('username', userName, 'models');
 
 
     if (accounts.length <= 0) {
@@ -97,13 +97,13 @@ async function handleLogin(player, username, password) {
         return;
     }
 
-    let model = null;
+    //let model = null;
 
-    if (models.length >= 1) {
-        model =  models[0].model;
-    }
+    //if (models.length >= 1) {
+    //    model =  models[0].model;
+    //}
     
-    alt.emit('auth:Done', player, accounts[0]._id.toString(), accounts[0].username, accounts[0].email, model);
+    alt.emit('auth:Done', player, accounts[0]._id.toString(), accounts[0].username, accounts[0].email);
 }
 
 /**
@@ -142,25 +142,16 @@ async function writeModel(userName, modelName) {
 	
 }
 
-async function getModel(userName, emit) {
+async function getModel(player, id, userName, email) {
 
     const models = await db.fetchAllByField('username', userName, 'models');
 
-    if (emit) {
-        if (models.length >= 1) {
-            alt.emit('auth:ModelGetted', models[0].model)
-        }
-        else {
-            alt.emit('auth:noModel')
-        }
+    
+    if (models.length >= 1) {
+        alt.emit('auth:ModelGetted', player, id, userName, email, models[0].model)
     }
     else {
-        if (models.length >= 1) {
-            return models[0].model;
-        }
-        else {
-            return null
-        }
-    }    
+        alt.emit('auth:noModel', player, id, userName, email)
+    }
 
 }
