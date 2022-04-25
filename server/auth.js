@@ -10,6 +10,7 @@ const db = sm.getDatabase();
 alt.onClient('auth:Try', handleAuthAttempt);
 alt.on('auth:Done', debugDoneAuth);
 alt.on('auth:writeModel', writeModel);
+alt.on('auth:getModel', getModel);
 
 /**
  * Route the method the player is using to login.
@@ -108,14 +109,6 @@ function debugDoneAuth(player, id, username, email) {
 }
 
 async function writeModel(userName, modelName) {
-    
-    // const document = {
-    //     username,
-    //     model
-    // };
-    // const dbData = await db.insertData(document, 'models', true);
-    // alt.emit('auth:ModelSaved', dbData.username, dbData.model);
-
 
 	const models = await db.fetchAllByField('username', userName, 'models');
 
@@ -138,4 +131,17 @@ async function writeModel(userName, modelName) {
 
     }
 	
+}
+
+async function getModel(userName) {
+
+    const models = await db.fetchAllByField('username', userName, 'models');
+
+    if (models.length > 1) {
+        alt.emit('auth:ModelGetted', models[0].model)
+    }
+    else {
+        alt.emit('auth:noModel')
+    }
+
 }
