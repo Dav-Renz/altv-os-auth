@@ -94,7 +94,9 @@ async function handleLogin(player, username, password) {
         return;
     }
 
-    alt.emit('auth:Done', player, accounts[0]._id.toString(), accounts[0].username, accounts[0].email);
+    let model = getModel(username, false);
+
+    alt.emit('auth:Done', player, accounts[0]._id.toString(), accounts[0].username, accounts[0].email, model);
 }
 
 /**
@@ -133,15 +135,25 @@ async function writeModel(userName, modelName) {
 	
 }
 
-async function getModel(userName) {
+async function getModel(userName, emit) {
 
     const models = await db.fetchAllByField('username', userName, 'models');
 
-    if (models.length > 1) {
-        alt.emit('auth:ModelGetted', models[0].model)
+    if (emit) {
+        if (models.length > 1) {
+            alt.emit('auth:ModelGetted', models[0].model)
+        }
+        else {
+            alt.emit('auth:noModel')
+        }
     }
     else {
-        alt.emit('auth:noModel')
-    }
+        if (models.length > 1) {
+            return models[0].model;
+        }
+        else {
+            return null
+        }
+    }    
 
 }
