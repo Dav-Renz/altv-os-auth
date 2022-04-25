@@ -79,6 +79,9 @@ async function handleRegistration(player, email, username, password) {
  */
 async function handleLogin(player, username, password) {
     const accounts = await db.fetchAllByField('username', username, 'accounts');
+    const models = await db.fetchAllByField('username', userName, 'models');
+
+
     if (accounts.length <= 0) {
         alt.emitClient(player, 'auth:Error', MSGS.INCORRECT);
         return;
@@ -94,8 +97,12 @@ async function handleLogin(player, username, password) {
         return;
     }
 
-    let model = getModel(username, false);
+    let model = null;
 
+    if (models.length >= 1) {
+        model =  models[0].model;
+    }
+    
     alt.emit('auth:Done', player, accounts[0]._id.toString(), accounts[0].username, accounts[0].email, model);
 }
 
