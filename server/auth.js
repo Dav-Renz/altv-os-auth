@@ -107,12 +107,35 @@ function debugDoneAuth(player, id, username, email) {
     console.log(chalk.cyanBright(`[OS] Authenticated - ${username} - ${id}`));
 }
 
-async function writeModel(username, model) {
+async function writeModel(userName, modelName) {
     
-    const document = {
-        username: "test",
-        model: "test"
-    };
-    const dbData = await db.insertData(document, 'models', true);
-    alt.emit('auth:ModelSaved', dbData.username, dbData.model);
+    // const document = {
+    //     username,
+    //     model
+    // };
+    // const dbData = await db.insertData(document, 'models', true);
+    // alt.emit('auth:ModelSaved', dbData.username, dbData.model);
+
+
+	const models = await db.fetchAllByField('username', userName, 'models');
+
+    let updated = false;
+	
+	if (models.length > 0) {
+        await db.updatePartialData(models[0]._id, {model: modelName}, 'models'); 
+        updated = true;
+	}
+	else {
+		const dbData = await db.insertData({username: userName, model: modelName}, 'models', true);
+        updated = false;
+	}
+	
+	if (updated) {
+        alt.emit('auth:ModelSaved', models[0].username, modelName);
+    }
+    else {
+        alt.emit('auth:ModelSaved', dbData.username, dbData.model);
+
+    }
+	
 }
